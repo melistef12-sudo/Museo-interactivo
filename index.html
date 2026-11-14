@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0c10">
+  <meta name="description" content="Exposición interactiva sobre PIB, desigualdad y bienestar en Colombia.">
+  <title>¿Un país que crece vive mejor? — Museo Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="Museo Digital, ir a portada"><span class="brand-mark" aria-hidden="true">M</span><span>MUSEO DIGITAL <small>COLOMBIA · 2012—2026</small></span></a>
+    <nav class="persistent-nav" aria-label="Estaciones de la exposición">
+      <button type="button" class="station-link" data-station="1" aria-label="Estación 01">01</button>
+      <button type="button" class="station-link" data-station="2" aria-label="Estación 02">02</button>
+      <button type="button" class="station-link" data-station="3" aria-label="Estación 03">03</button>
+      <button type="button" class="station-link" data-station="4" aria-label="Estación 04">04</button>
+      <button type="button" class="station-link" data-station="5" aria-label="Estación 05">05</button>
+    </nav>
+    <span class="topbar-note">EXPOSICIÓN INTERACTIVA <span aria-hidden="true">✳</span></span>
+  </header>
+
+  <main id="main">
+    <section class="view hero-view" id="view-home" data-view="home" aria-labelledby="home-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="live-dot"></span> UNA EXPOSICIÓN SOBRE LO QUE CUENTAN LAS CIFRAS</p>
+        <h1 id="home-title">¿Un país que<br>crece <em>vive mejor?</em></h1>
+        <p class="hero-subtitle">PIB, crecimiento, desigualdad y bienestar en Colombia <span>(2012–2026)</span></p>
+        <p class="hero-intro">Cuando las noticias celebran que la economía creció, ¿ese progreso llega a la mesa de todos los hogares? Explora esta exposición interactiva para descubrir qué esconden las cifras macroeconómicas y cómo se mide realmente la calidad de vida en nuestro país.</p>
+        <button class="button button-primary hero-cta" type="button" data-go="1">Comenzar el recorrido <span aria-hidden="true">↗</span></button>
+        <p class="scroll-hint"><span aria-hidden="true">↓</span> RECORRIDO · 5 ESTACIONES</p>
+      </div>
+      <div class="hero-art" aria-label="Ilustración abstracta de crecimiento y desigualdad territorial">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div>
+        <div class="art-core"><span>PIB</span><small>¿PARA QUIÉN?</small></div>
+        <span class="art-label label-one">CRECIMIENTO <b>↗</b></span><span class="art-label label-two">BIENESTAR <b>?</b></span>
+        <span class="art-coordinate">4° 42′ N<br>74° 04′ O</span>
+      </div>
+    </section>
+
+    <section class="view station-view" id="view-1" data-view="station" data-index="1" aria-labelledby="station-1-title" hidden>
+      <div class="station-heading"><p class="eyebrow"><span class="station-kicker">01</span> · PROVOCACIÓN</p><h2 id="station-1-title">El espejismo del<br><em>crecimiento económico</em></h2><p class="lede">Existe el mito de que si el Producto Interno Bruto (PIB) sube, toda la población mejora automáticamente sus condiciones de vida. Para poner a prueba esta afirmación en <strong>Colombia (2012–2026)</strong>, debemos mirar más allá del tamaño de la economía y examinar qué ocurre paralelamente en las ciudades y en el campo con los ingresos y el acceso a derechos básicos.</p></div>
+      <div class="contrast-card"><div class="contrast-top"><span class="eyebrow">EL TITULAR</span><span class="signal signal-up">ECONOMÍA ↗</span></div><p>“La economía nacional<br>crece un <strong>3,5 %</strong>”</p><div class="contrast-divider"><span>¿Y EN LOS TERRITORIOS?</span></div><p class="contrast-question">“¿Por qué en el campo la pobreza duplica a la de las ciudades?”</p><span class="contrast-decoration" aria-hidden="true">↗</span></div>
+      <div class="three-cards"><article class="info-card"><span class="card-index">A / MITO</span><h3>Más PIB = más bienestar</h3><p>El crecimiento económico mejora automáticamente la vida de todas las personas.</p></article><article class="info-card"><span class="card-index">B / TERRITORIO</span><h3>Un país, realidades distintas</h3><p>Hogares en cabeceras urbanas frente a centros poblados y rural disperso.</p></article><article class="info-card"><span class="card-index">C / PERIODO</span><h3>2012—2026</h3><p>Una mirada a las series históricas oficiales del DANE.</p></article></div>
+    </section>
+
+    <section class="view station-view" id="view-2" data-view="station" data-index="2" aria-labelledby="station-2-title" hidden>
+      <div class="station-heading"><p class="eyebrow"><span class="station-kicker">02</span> · HERRAMIENTAS PARA MEDIR</p><h2 id="station-2-title">Tres lentes para observar<br><em>un mismo país</em></h2><p class="lede">Un solo indicador no cuenta toda la historia. Mientras el PIB calcula el tamaño de la producción económica, las mediciones de pobreza revelan quiénes carecen de ingresos o derechos esenciales. Selecciona cada indicador para descubrir qué mide y cuáles son sus límites.</p></div>
+      <div class="comparator">
+        <div class="tab-list" role="tablist" aria-label="Seleccionar indicador">
+          <button class="tab-button active" id="tab-pib" type="button" role="tab" aria-selected="true" aria-controls="indicator-panel" data-indicator="pib">PIB <span>01</span></button>
+          <button class="tab-button" id="tab-monetaria" type="button" role="tab" aria-selected="false" aria-controls="indicator-panel" data-indicator="monetaria" tabindex="-1">Pobreza Monetaria <span>02</span></button>
+          <button class="tab-button" id="tab-multidimensional" type="button" role="tab" aria-selected="false" aria-controls="indicator-panel" data-indicator="multidimensional" tabindex="-1">Pobreza Multidimensional <span>03</span></button>
+        </div>
+        <article class="indicator-card" id="indicator-panel" role="tabpanel" aria-labelledby="tab-pib" tabindex="0">
+          <div class="indicator-card-top"><span class="eyebrow" id="indicator-number">INDICADOR 01</span><span class="indicator-symbol" id="indicator-symbol" aria-hidden="true">↗</span></div>
+          <h3 id="indicator-title">Producto Interno Bruto</h3>
+          <div class="definition-grid"><div><span class="field-label">QUÉ MIDE</span><p id="indicator-measures">El valor de mercado de todos los bienes y servicios finales producidos en el país durante un periodo determinado.</p></div><div class="limit-box"><span class="field-label">SU LÍMITE</span><p id="indicator-limit">Muestra la riqueza total generada, pero no cómo se reparte entre los ciudadanos.</p></div></div>
+        </article>
+      </div>
+      <p class="interaction-hint"><span aria-hidden="true">↖</span> Selecciona otro indicador para comparar sus alcances.</p>
+    </section>
+
+    <section class="view station-view" id="view-3" data-view="station" data-index="3" aria-labelledby="station-3-title" hidden>
+      <div class="station-heading"><p class="eyebrow"><span class="station-kicker">03</span> · EVIDENCIA · FUENTE: DANE</p><h2 id="station-3-title">Lo que revelan las cifras<br><em>en Colombia</em></h2><p class="lede">Al cruzar las evidencias del DANE, emerge una realidad con brechas territoriales profundas. Tras el choque de 2020, el país retomó la senda de crecimiento y redujo la pobreza hacia 2025. Sin embargo, habitar en zonas rurales sigue representando una desventaja crítica tanto en ingresos monetarios como en acceso a derechos básicos frente a las cabeceras urbanas.</p></div>
+      <div class="chart-shell">
+        <div class="chart-header"><div><span class="eyebrow">DATOS OFICIALES · COLOMBIA</span><h3 id="chart-title">Crecimiento del PIB</h3></div><span class="chart-unit">VARIACIÓN PORCENTUAL (%)</span></div>
+        <div class="chart-tabs" role="tablist" aria-label="Seleccionar visualización">
+          <button type="button" class="chart-tab active" role="tab" aria-selected="true" data-chart="pib">PIB</button>
+          <button type="button" class="chart-tab" role="tab" aria-selected="false" data-chart="monetaria">Pobreza monetaria</button>
+          <button type="button" class="chart-tab" role="tab" aria-selected="false" data-chart="multidimensional">Pobreza multidimensional</button>
+        </div>
+        <div class="chart-plot" id="chart-plot" role="tabpanel" aria-live="polite" aria-label="Gráfico de crecimiento del PIB"></div>
+        <div class="chart-legend" id="chart-legend"><span><i class="legend-dot national"></i>Nacional</span><span><i class="legend-dot urban"></i>Cabeceras</span><span><i class="legend-dot rural"></i>Centros poblados y rural disperso</span></div>
+        <div class="chart-footer"><p id="chart-caption">Tasas anuales en volumen · 2023-II a 2026pr-II</p><p>Fuente: DANE · Cuentas Nacionales y Encuesta de Calidad de Vida (ECV)</p></div>
+      </div>
+      <p class="data-note">2026pr: dato provisional indicado en el material de referencia. Los valores se presentan como cifras destacadas para explorar las brechas.</p>
+    </section>
+
+    <section class="view station-view" id="view-4" data-view="station" data-index="4" aria-labelledby="station-4-title" hidden>
+      <div class="station-heading"><p class="eyebrow"><span class="station-kicker">04</span> · DOS EXPLICACIONES, DOS POSTURAS</p><h2 id="station-4-title">El debate: ¿impulsar la locomotora<br>o <em>redistribuir el vagón?</em></h2><p class="lede">Ante los datos de crecimiento del PIB (3,5 %) y la persistencia de la pobreza rural (39,5 % monetaria y 22,4 % multidimensional), los economistas y diseñadores de políticas públicas debaten dos posturas principales sobre cómo lograr que el bienestar llegue realmente a toda la población.</p></div>
+      <div class="debate-grid"><article class="debate-card growth-card"><div class="debate-top"><span class="card-index">POSTURA A</span><span class="debate-icon" aria-hidden="true">↗</span></div><h3>“Agrandar el pastel”</h3><p class="debate-subtitle">Prioridad al crecimiento económico</p><p>Sostiene que el aumento sostenido del PIB es la condición indispensable. Al incentivar la inversión empresarial y la producción, se genera empleo formal y mayores ingresos fiscales que, gradualmente, reducen la pobreza monetaria en todo el país.</p><div class="debate-tag">CRECIMIENTO · INVERSIÓN · EMPLEO</div></article><article class="debate-card equity-card"><div class="debate-top"><span class="card-index">POSTURA B</span><span class="debate-icon" aria-hidden="true">✳</span></div><h3>“Cerrar las brechas”</h3><p class="debate-subtitle">Desarrollo multidimensional y redistribución</p><p>Advierte que el crecimiento por sí solo se concentra en las ciudades y no resuelve la desigualdad. Exige inversión pública directa en las 5 dimensiones —salud, educación, acueductos y trabajo rural— para garantizar bienestar real sin esperar al mercado.</p><div class="debate-tag">DERECHOS · TERRITORIO · EQUIDAD</div></article></div>
+      <p class="debate-footnote"><span aria-hidden="true">✳</span> Las posturas representan enfoques de política pública; los resultados dependen del diseño y el contexto.</p>
+    </section>
+
+    <section class="view station-view" id="view-5" data-view="station" data-index="5" aria-labelledby="station-5-title" hidden>
+      <div class="station-heading"><p class="eyebrow"><span class="station-kicker">05</span> · LABORATORIO DE DECISIONES</p><h2 id="station-5-title">Laboratorio Ministerial:<br><em>el reto del presupuesto 2026</em></h2><p class="lede">Eres el director de planeación nacional. El PIB creció un <strong>3,5 %</strong>, pero en las zonas rurales la pobreza multidimensional sigue en <strong>22,4 %</strong> (frente a <strong>6,3 %</strong> en ciudades) y la monetaria en <strong>39,5 %</strong>. Tienes un excedente presupuestal para cerrar la brecha de bienestar de forma sostenible. <strong>¿Qué decisión tomas?</strong></p></div>
+      <div class="game-card"><div class="game-question"><span class="eyebrow">DECISIÓN 01 / 01</span><h3>¿Dónde invertirías el excedente?</h3><p>Elige una política y observa qué revela la evidencia.</p></div>
+        <div class="option-list" role="group" aria-label="Opciones de política pública">
+          <button class="option-button" type="button" data-option="a"><span class="option-letter">A</span><span>Otorgar exenciones tributarias generales a grandes industrias en las capitales para acelerar aún más el PIB nacional.</span><span class="option-arrow" aria-hidden="true">↗</span></button>
+          <button class="option-button" type="button" data-option="b"><span class="option-letter">B</span><span>Entregar un bono monetario único de emergencia por un mes a las familias rurales sin modificar la infraestructura local.</span><span class="option-arrow" aria-hidden="true">↗</span></button>
+          <button class="option-button" type="button" data-option="c"><span class="option-letter">C</span><span>Invertir en acueductos veredales, escuelas técnicas rurales, vías terciarias y formalización laboral agropecuaria.</span><span class="option-arrow" aria-hidden="true">↗</span></button>
+        </div>
+        <div class="feedback" id="game-feedback" aria-live="polite" aria-atomic="true" hidden><span class="feedback-status" id="feedback-status"></span><h4 id="feedback-title"></h4><p id="feedback-text"></p><button class="button button-secondary" id="retry-button" type="button">Intentar de nuevo <span aria-hidden="true">↻</span></button></div>
+      </div>
+    </section>
+
+    <section class="view closing-view" id="view-closing" data-view="closing" aria-labelledby="closing-title" hidden>
+      <div class="closing-graphic" aria-hidden="true"><span class="closing-ring ring-a"></span><span class="closing-ring ring-b"></span><span class="closing-star">✳</span><span class="closing-label">MÁS ALLÁ<br>DEL PIB</span></div>
+      <div class="closing-copy"><p class="eyebrow">CIERRE · UNA MIRADA MÁS AMPLIA</p><h2 id="closing-title">Más allá de las cifras:<br><em>el bienestar es multidimensional</em></h2><ol class="takeaways"><li><span>01</span><p><strong>El PIB no basta.</strong> Crecer económicamente es necesario, pero no garantiza automáticamente que todos vivan mejor.</p></li><li><span>02</span><p><strong>Mirada completa.</strong> Combinar PIB, Pobreza Monetaria y Pobreza Multidimensional permite ver tanto el bolsillo como el acceso a derechos.</p></li><li><span>03</span><p><strong>El reto territorial.</strong> El verdadero desarrollo en Colombia exige cerrar la brecha histórica entre las ciudades y el campo.</p></li></ol><button class="button button-primary" type="button" data-go="home">Volver al inicio <span aria-hidden="true">↗</span></button></div>
+    </section>
+  </main>
+
+  <footer class="global-controls" aria-label="Controles del recorrido">
+    <button class="control-button home-control" type="button" data-go="home"><span aria-hidden="true">⌂</span> Inicio</button>
+    <div class="progress-wrap"><span id="progress-label">PORTADA</span><div class="progress-track"><span id="progress-bar"></span></div></div>
+    <div class="step-controls"><button class="control-button" id="back-button" type="button"><span aria-hidden="true">←</span> Volver</button><button class="button button-primary next-button" id="next-button" type="button">Continuar <span aria-hidden="true">→</span></button></div>
+  </footer>
+</body>
+</html>

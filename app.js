@@ -25,11 +25,10 @@ function renderView(nextView, {focusHeading = true} = {}) {
   document.getElementById('progress-bar').style.width = `${(step / (sequence.length - 1)) * 100}%`;
   document.getElementById('back-button').disabled = false;
   document.getElementById('next-button').innerHTML = currentView === 'closing' ? 'Volver al inicio <span aria-hidden="true">↗</span>' : 'Continuar <span aria-hidden="true">→</span>';
-  document.getElementById('back-button').innerHTML = currentView === 'home' ? '<span aria-hidden="true">←</span> Volver' : '<span aria-hidden="true">←</span> Volver';
+  document.getElementById('back-button').innerHTML = '<span aria-hidden="true">←</span> Volver';
   window.scrollTo({top: 0, behavior: 'smooth'});
   if (focusHeading) {
-    const visibleView = document.querySelector('.view:not([hidden])');
-    const heading = visibleView?.querySelector('h1, h2');
+    const heading = document.querySelector('.view:not([hidden]) h1, .view:not([hidden]) h2');
     if (heading) {
       heading.setAttribute('tabindex', '-1');
       heading.focus({preventScroll: true});
@@ -39,35 +38,18 @@ function renderView(nextView, {focusHeading = true} = {}) {
 
 function navigate(delta) {
   const index = sequence.indexOf(currentView);
-  const next = (index + delta + sequence.length) % sequence.length;
-  renderView(sequence[next]);
+  renderView(sequence[(index + delta + sequence.length) % sequence.length]);
 }
 
-document.querySelectorAll('.station-link').forEach((button) => {
-  button.addEventListener('click', () => renderView(button.dataset.station));
-});
-document.querySelectorAll('[data-go]').forEach((button) => {
-  button.addEventListener('click', () => renderView(button.dataset.go));
-});
+document.querySelectorAll('.station-link').forEach((button) => button.addEventListener('click', () => renderView(button.dataset.station)));
+document.querySelectorAll('[data-go]').forEach((button) => button.addEventListener('click', () => renderView(button.dataset.go)));
 document.getElementById('back-button').addEventListener('click', () => navigate(-1));
 document.getElementById('next-button').addEventListener('click', () => navigate(1));
 
 const indicators = {
-  pib: {
-    number:'INDICADOR 01', title:'Producto Interno Bruto', symbol:'↗',
-    measures:'El valor de mercado de todos los bienes y servicios finales producidos en el país durante un periodo determinado.',
-    limit:'Muestra la riqueza total generada, pero no cómo se reparte entre los ciudadanos.'
-  },
-  monetaria: {
-    number:'INDICADOR 02', title:'Pobreza Monetaria', symbol:'$',
-    measures:'La insuficiencia de ingresos económicos de un hogar para adquirir la canasta básica de alimentos y servicios.',
-    limit:'Evalúa capacidad de compra, pero no si el hogar tiene acceso a salud o escuelas de calidad.'
-  },
-  multidimensional: {
-    number:'INDICADOR 03', title:'Pobreza Multidimensional (PM)', symbol:'✳',
-    measures:'Las privaciones directas de un hogar en 5 dimensiones: educación, trabajo, salud, vivienda y servicios públicos, y niñez y juventud.',
-    limit:'No refleja caídas súbitas de ingresos monetarios a corto plazo.'
-  }
+  pib: {number:'INDICADOR 01', title:'Producto Interno Bruto', symbol:'↗', measures:'El valor de mercado de todos los bienes y servicios finales producidos en el país durante un periodo determinado.', limit:'Muestra la riqueza total generada, pero no cómo se reparte entre los ciudadanos.'},
+  monetaria: {number:'INDICADOR 02', title:'Pobreza Monetaria', symbol:'$', measures:'La insuficiencia de ingresos económicos de un hogar para adquirir la canasta básica de alimentos y servicios.', limit:'Evalúa capacidad de compra, pero no si el hogar tiene acceso a salud o escuelas de calidad.'},
+  multidimensional: {number:'INDICADOR 03', title:'Pobreza Multidimensional (PM)', symbol:'✳', measures:'Las privaciones directas de un hogar en 5 dimensiones: educación, trabajo, salud, vivienda y servicios públicos, y niñez y juventud.', limit:'No refleja caídas súbitas de ingresos monetarios a corto plazo.'}
 };
 function selectIndicator(key) {
   const item = indicators[key];
@@ -100,20 +82,32 @@ document.querySelectorAll('.tab-button').forEach((button, index, buttons) => {
   });
 });
 
+// Only the values supplied for the exhibit are plotted. Missing years are not interpolated.
 const chartData = {
   pib: {
-    title:'Crecimiento del PIB', caption:'Tasas anuales en volumen · 2023-II a 2026pr-II', max:4,
-    groups:[{label:'2023-II',values:[['Nacional',.4,'national']]},{label:'2024-II',values:[['Nacional',1.5,'national']]},{label:'2025-II',values:[['Nacional',1.9,'national']]},{label:'2026pr-II',values:[['Nacional',3.5,'national']]}]
+    title:'Crecimiento del PIB', unit:'VARIACIÓN ANUAL (%)', caption:'Tasas anuales en volumen · trimestres II seleccionados', max:4, tick:1,
+    insight:'El crecimiento anual citado pasa de 0,4 % en 2023-II a 3,5 % en 2026pr-II. El dato de 2026pr es provisional; los puntos intermedios no se estiman.',
+    rows:[{label:'2023-II',value:.4,color:'national'},{label:'2024-II',value:1.5,color:'national'},{label:'2025-II',value:1.9,color:'national'},{label:'2026pr-II',value:3.5,color:'national'}]
   },
   monetaria: {
-    title:'Incidencia de Pobreza Monetaria', caption:'Porcentaje de personas · 2020 y 2025', max:50,
-    groups:[{label:'2020',values:[['Nacional',43.1,'national']]},{label:'2025',values:[['Nacional',28,'national'],['Cabeceras',24.6,'urban'],['Rural',39.5,'rural']]}]
+    title:'Incidencia de Pobreza Monetaria', unit:'PERSONAS EN POBREZA (%)', caption:'Puntos de referencia seleccionados · 2020 y 2025', max:50, tick:10,
+    insight:'En 2025, la pobreza monetaria fue 39,5 % en centros poblados y rural disperso, frente a 24,6 % en cabeceras y 28,0 % nacional. El 43,1 % corresponde al total nacional de 2020: se muestra como referencia de otro año, no como dato rural.',
+    rows:[{label:'2020 · Nacional',value:43.1,color:'national'},{label:'2025 · Nacional',value:28,color:'national'},{label:'2025 · Cabeceras',value:24.6,color:'urban'},{label:'2025 · Centros poblados y rural disperso',shortLabel:['Centros poblados y','rural disperso'],value:39.5,color:'rural'}]
   },
   multidimensional: {
-    title:'Incidencia de Pobreza Multidimensional (PM)', caption:'Porcentaje de hogares · 2018 y 2025', max:25,
-    groups:[{label:'2018',values:[['Nacional',19.1,'national']]},{label:'2025',values:[['Nacional',9.9,'national'],['Cabeceras',6.3,'urban'],['Rural',22.4,'rural']]}]
+    title:'Incidencia de Pobreza Multidimensional (PM)', unit:'PERSONAS EN POBREZA (%)', caption:'Puntos de referencia seleccionados · 2018 y 2025', max:25, tick:5,
+    insight:'En 2025, la incidencia rural (22,4 %) fue más de tres veces la de cabeceras (6,3 %); el total nacional fue 9,9 %. El 19,1 % es el dato nacional de 2018 y sirve como referencia temporal, no como cifra rural.',
+    rows:[{label:'2018 · Nacional',value:19.1,color:'national'},{label:'2025 · Nacional',value:9.9,color:'national'},{label:'2025 · Cabeceras',value:6.3,color:'urban'},{label:'2025 · Centros poblados y rural disperso',shortLabel:['Centros poblados y','rural disperso'],value:22.4,color:'rural'}]
   }
 };
+const svgNS = 'http://www.w3.org/2000/svg';
+const chartColors = {national:'#00a896',urban:'#e63946',rural:'#8d99ae'};
+function makeSvgElement(name, attrs = {}) {
+  const element = document.createElementNS(svgNS, name);
+  Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
+  return element;
+}
+function formatPercent(value) { return `${String(value).replace('.', ',')} %`; }
 function renderChart(key) {
   const chart = chartData[key];
   if (!chart) return;
@@ -123,165 +117,125 @@ function renderChart(key) {
     button.setAttribute('aria-selected', String(active));
   });
   document.getElementById('chart-title').textContent = chart.title;
+  document.querySelector('.chart-unit').textContent = chart.unit;
   document.getElementById('chart-caption').textContent = chart.caption;
   const plot = document.getElementById('chart-plot');
-  plot.setAttribute('aria-label', `${chart.title}. ${chart.groups.map(group => `${group.label}: ${group.values.map(value => `${value[0]} ${String(value[1]).replace('.', ',')} por ciento`).join(', ')}`).join('; ')}`);
-  plot.replaceChildren();
-  chart.groups.forEach((group) => {
-    const groupEl = document.createElement('div');
-    groupEl.className = 'bar-group';
-    groupEl.setAttribute('role', 'group');
-    groupEl.setAttribute('aria-label', group.label);
-    group.values.forEach(([label, value, color]) => {
-      const item = document.createElement('div');
-      item.className = 'bar-item';
-      item.setAttribute('aria-label', `${label}: ${String(value).replace('.', ',')} %`);
-      const valueEl = document.createElement('span');
-      valueEl.className = 'bar-value';
-      valueEl.textContent = `${String(value).replace('.', ',')} %`;
-      const bar = document.createElement('span');
-      bar.className = `bar ${color === 'national' ? '' : color}`;
-      bar.style.height = `${Math.max(3, value / chart.max * 100)}%`;
-      bar.setAttribute('aria-hidden', 'true');
-      const year = document.createElement('span');
-      year.className = 'bar-year';
-      year.textContent = label;
-      item.append(valueEl, bar, year);
-      groupEl.append(item);
-    });
-    const yearLabel = document.createElement('span');
-    yearLabel.className = 'bar-year';
-    yearLabel.textContent = group.label;
-    yearLabel.setAttribute('aria-hidden', 'true');
-    groupEl.append(yearLabel);
-    plot.append(groupEl);
+  plot.setAttribute('aria-label', `${chart.title}. ${chart.rows.map(row => `${row.label}: ${String(row.value).replace('.', ',')} por ciento`).join('; ')}`);
+  const note = document.querySelector('.data-note');
+  note.textContent = `${chart.insight} Fuente: DANE, Cuentas Nacionales y Encuesta de Calidad de Vida (ECV). Se presentan únicamente los puntos de referencia indicados; no es una serie anual completa.`;
+
+  const left = 300, right = 720, top = 38, rowHeight = 54;
+  const height = top + chart.rows.length * rowHeight + 20;
+  const svg = makeSvgElement('svg', {viewBox:`0 0 760 ${height}`, role:'img', 'aria-labelledby':'chart-svg-title chart-svg-desc', preserveAspectRatio:'xMidYMid meet', style:'display:block;width:100%;height:auto;overflow:visible'});
+  const title = makeSvgElement('title', {id:'chart-svg-title'}); title.textContent = chart.title;
+  const desc = makeSvgElement('desc', {id:'chart-svg-desc'}); desc.textContent = chart.rows.map(row => `${row.label}: ${formatPercent(row.value)}`).join('. ');
+  svg.append(title, desc);
+
+  const tickCount = chart.max / chart.tick;
+  for (let i = 0; i <= tickCount; i += 1) {
+    const value = i * chart.tick;
+    const x = left + (value / chart.max) * (right - left);
+    svg.append(makeSvgElement('line', {x1:x,y1:top-8,x2:x,y2:height-16,stroke:'rgba(255,255,255,0.13)','stroke-width':'1'}));
+    const tickLabel = makeSvgElement('text', {x,y:top-16,fill:'#a1a5b1','font-size':'12','text-anchor':'middle','font-family':'DM Sans, Arial, sans-serif'});
+    tickLabel.textContent = `${String(value).replace('.', ',')} %`;
+    svg.append(tickLabel);
+  }
+  chart.rows.forEach((row, index) => {
+    const y = top + index * rowHeight + 19;
+    const label = makeSvgElement('text', {x:8,y:y+4,fill:'#f2f0e9','font-size':'13','font-family':'DM Sans, Arial, sans-serif'});
+    if (row.shortLabel) {
+      row.shortLabel.forEach((line, lineIndex) => {
+        const tspan = makeSvgElement('tspan', {x:8,dy:lineIndex === 0 ? 0 : 15});
+        tspan.textContent = line;
+        label.append(tspan);
+      });
+    } else label.textContent = row.label;
+    svg.append(label);
+    const barWidth = Math.max(2, (row.value / chart.max) * (right - left));
+    svg.append(makeSvgElement('rect', {x:left,y:y-10,width:barWidth,height:20,rx:3,fill:chartColors[row.color]}));
+    const valueLabel = makeSvgElement('text', {x:Math.min(left + barWidth + 8, 750),y:y+5,fill:'#f2f0e9','font-size':'13','font-weight':'700','font-family':'DM Sans, Arial, sans-serif'});
+    valueLabel.textContent = formatPercent(row.value);
+    svg.append(valueLabel);
   });
+  plot.replaceChildren(svg);
   document.getElementById('chart-legend').hidden = key === 'pib';
 }
 document.querySelectorAll('.chart-tab').forEach((button) => button.addEventListener('click', () => renderChart(button.dataset.chart)));
 
 const gameQuestions = [
-  {
-    question: '¿Cuál política prioriza un bienestar más sostenible para el campo?',
-    help: 'Elige la respuesta que combine crecimiento y acceso a derechos en las zonas rurales.',
-    options: [
-      { key: 'a', label: 'Exenciones tributarias para grandes industrias y capitales.', correct: false, status: 'CRECIMIENTO SIN EQUIDAD', title: '¡Atención! Crecimiento sin equidad territorial.', text: 'Aunque esta medida puede elevar el PIB nacional, los datos muestran que el crecimiento urbano no se filtra automáticamente al campo. La brecha multidimensional del 22,4 % en zonas rurales seguiría intacta al no intervenir salud, educación ni servicios básicos.' },
-      { key: 'b', label: 'Un bono monetario único para familias rurales durante un mes.', correct: false, status: 'ALIVIO TEMPORAL', title: '¡Efecto temporal!', text: 'Un subsidio único alivia momentáneamente la Pobreza Monetaria al permitir comprar la canasta básica ese mes. Sin embargo, no resuelve las 5 dimensiones de la Pobreza Multidimensional: un hogar no construye un acueducto ni una escuela con un giro puntual.' },
-      { key: 'c', label: 'Invertir en acueductos veredales, escuelas técnicas rurales, vías terciarias y formalización laboral agropecuaria.', correct: true, status: 'DECISIÓN BASADA EN EVIDENCIA', title: '¡Decisión integral!', text: 'Atacas simultáneamente las raíces del problema: mejoras vivienda y servicios, educación y trabajo en el campo, reduciendo el 22,4 % de Pobreza Multidimensional y generando capacidades productivas que elevan ingresos permanentes, además de aportar al PIB real.' }
-    ]
-  },
-  {
-    question: '¿Qué señal es más importante para leer la realidad de Colombia?',
-    help: 'Antes de celebrar el crecimiento, revisa quién tiene acceso a oportunidades reales.',
-    options: [
-      { key: 'a', label: 'La cifra del PIB nacional en aumento.', correct: false, status: 'PIB NO LO EXPLICA TODO', title: 'El PIB cuenta la producción, no siempre la distribución.', text: 'El PIB refleja el tamaño de la economía, pero no muestra si las personas tienen ingreso estable, servicios básicos ni acceso a educación y salud.' },
-      { key: 'b', label: 'La combinación de PIB, pobreza monetaria y pobreza multidimensional.', correct: true, status: 'MIRADA COMPLETA', title: '¡Correcto! El análisis debe ser multidimensional.', text: 'Cada indicador responde a una pregunta distinta: producción, ingreso y acceso a derechos. Juntos permiten entender mejor la desigualdad territorial y el bienestar real.' },
-      { key: 'c', label: 'Solo la tasa de crecimiento anual.', correct: false, status: 'CRECIMIENTO PARCIAL', title: 'Crecimiento sin mirada territorial.', text: 'La tasa de crecimiento puede mejorar la narrativa macroeconómica, pero no revela si los beneficios llegaron a hogares rurales ni a comunidades con mayor vulnerabilidad.' }
-    ]
-  },
-  {
-    question: 'Si tu objetivo es cerrar brechas de bienestar, ¿qué prioridad es más efectiva?',
-    help: 'La mejor decisión suele combinar equidad, infraestructura y capacidades productivas.',
-    options: [
-      { key: 'a', label: 'Aumentar más impuestos a las familias de bajos ingresos.', correct: false, status: 'MEDIDA INADECUADA', title: 'No es la vía adecuada.', text: 'Aumentar la carga fiscal sobre quienes menos tienen refuerza la desigualdad y no resuelve la falta de infraestructura ni de oportunidades en el campo.' },
-      { key: 'b', label: 'Invertir en servicios básicos y capacidades productivas en zonas rurales.', correct: true, status: 'ESTRATEGIA INTEGRAL', title: '¡Decisión acertada!', text: 'La inversión en acueductos, educación técnica, vías terciarias y formalización laboral genera bienestar real y también condiciones para una actividad económica más duradera.' },
-      { key: 'c', label: 'Repartir un subsidio único para todos por igual.', correct: false, status: 'SUBSIDIO LIMITADO', title: 'Efecto parcial y fragmentado.', text: 'Un subsidio universal sin inversión territorial no resuelve la infraestructura ni la calidad de servicios esenciales que sostienen la vida y la productividad.' }
-    ]
-  }
+  {question:'¿Cuál política prioriza un bienestar más sostenible para el campo?',help:'Elige la respuesta que combine crecimiento y acceso a derechos en las zonas rurales.',options:[
+    {key:'a',label:'Exenciones tributarias para grandes industrias y capitales.',correct:false,status:'CRECIMIENTO SIN EQUIDAD',title:'¡Atención! Crecimiento sin equidad territorial.',text:'Aunque esta medida puede elevar el PIB nacional, los datos muestran que el crecimiento urbano no se filtra automáticamente al campo. La brecha multidimensional del 22,4 % en zonas rurales seguiría intacta al no intervenir salud, educación ni servicios básicos.'},
+    {key:'b',label:'Un bono monetario único para familias rurales durante un mes.',correct:false,status:'ALIVIO TEMPORAL',title:'¡Efecto temporal!',text:'Un subsidio único alivia momentáneamente la Pobreza Monetaria al permitir comprar la canasta básica ese mes. Sin embargo, no resuelve las 5 dimensiones de la Pobreza Multidimensional: un hogar no construye un acueducto ni una escuela con un giro puntual.'},
+    {key:'c',label:'Invertir en acueductos veredales, escuelas técnicas rurales, vías terciarias y formalización laboral agropecuaria.',correct:true,status:'DECISIÓN BASADA EN EVIDENCIA',title:'¡Decisión integral!',text:'Atacas simultáneamente las raíces del problema: mejoras vivienda y servicios, educación y trabajo en el campo, reduciendo el 22,4 % de Pobreza Multidimensional y generando capacidades productivas que elevan ingresos permanentes, además de aportar al PIB real.'}
+  ]},
+  {question:'¿Qué señal es más importante para leer la realidad de Colombia?',help:'Antes de celebrar el crecimiento, revisa quién tiene acceso a oportunidades reales.',options:[
+    {key:'a',label:'La cifra del PIB nacional en aumento.',correct:false,status:'PIB NO LO EXPLICA TODO',title:'El PIB cuenta la producción, no siempre la distribución.',text:'El PIB refleja el tamaño de la economía, pero no muestra si las personas tienen ingreso estable, servicios básicos ni acceso a educación y salud.'},
+    {key:'b',label:'La combinación de PIB, pobreza monetaria y pobreza multidimensional.',correct:true,status:'MIRADA COMPLETA',title:'¡Correcto! El análisis debe ser multidimensional.',text:'Cada indicador responde a una pregunta distinta: producción, ingreso y acceso a derechos. Juntos permiten entender mejor la desigualdad territorial y el bienestar real.'},
+    {key:'c',label:'Solo la tasa de crecimiento anual.',correct:false,status:'CRECIMIENTO PARCIAL',title:'Crecimiento sin mirada territorial.',text:'La tasa de crecimiento puede mejorar la narrativa macroeconómica, pero no revela si los beneficios llegaron a hogares rurales ni a comunidades con mayor vulnerabilidad.'}
+  ]},
+  {question:'Si tu objetivo es cerrar brechas de bienestar, ¿qué prioridad es más efectiva?',help:'La mejor decisión suele combinar equidad, infraestructura y capacidades productivas.',options:[
+    {key:'a',label:'Aumentar más impuestos a las familias de bajos ingresos.',correct:false,status:'MEDIDA INADECUADA',title:'No es la vía adecuada.',text:'Aumentar la carga fiscal sobre quienes menos tienen refuerza la desigualdad y no resuelve la falta de infraestructura ni de oportunidades en el campo.'},
+    {key:'b',label:'Invertir en servicios básicos y capacidades productivas en zonas rurales.',correct:true,status:'ESTRATEGIA INTEGRAL',title:'¡Decisión acertada!',text:'La inversión en acueductos, educación técnica, vías terciarias y formalización laboral genera bienestar real y también condiciones para una actividad económica más duradera.'},
+    {key:'c',label:'Repartir un subsidio único para todos por igual.',correct:false,status:'SUBSIDIO LIMITADO',title:'Efecto parcial y fragmentado.',text:'Un subsidio universal sin inversión territorial no resuelve la infraestructura ni la calidad de servicios esenciales que sostienen la vida y la productividad.'}
+  ]}
 ];
-
 const optionButtons = [...document.querySelectorAll('.option-button')];
-let currentQuestionIndex = 0;
-let totalCorrect = 0;
-let answered = false;
-
+let currentQuestionIndex = 0, totalCorrect = 0, answered = false;
 function updateQuestionUI() {
-  const currentQuestion = gameQuestions[currentQuestionIndex];
+  const question = gameQuestions[currentQuestionIndex];
   document.getElementById('game-step').textContent = `PREGUNTA ${currentQuestionIndex + 1} / ${gameQuestions.length}`;
-  document.getElementById('game-question-title').textContent = currentQuestion.question;
-  document.getElementById('game-question-copy').textContent = currentQuestion.help;
-
+  document.getElementById('game-question-title').textContent = question.question;
+  document.getElementById('game-question-copy').textContent = question.help;
   optionButtons.forEach((button, index) => {
-    const option = currentQuestion.options[index];
+    const option = question.options[index];
     button.dataset.option = option.key;
     button.innerHTML = `<span class="option-letter">${option.key.toUpperCase()}</span><span>${option.label}</span><span class="option-arrow" aria-hidden="true">↗</span>`;
     button.disabled = false;
     button.classList.remove('selected');
     button.setAttribute('aria-label', option.label);
   });
-
-  const panel = document.getElementById('game-feedback');
-  panel.hidden = true;
-  panel.classList.remove('correct');
+  document.getElementById('game-feedback').hidden = true;
+  document.getElementById('game-feedback').classList.remove('correct');
   document.getElementById('next-question-button').hidden = true;
   answered = false;
 }
-
 function showFeedback(optionKey) {
-  const currentQuestion = gameQuestions[currentQuestionIndex];
-  const selected = currentQuestion.options.find((opt) => opt.key === optionKey);
+  if (answered) return;
+  const selected = gameQuestions[currentQuestionIndex].options.find((option) => option.key === optionKey);
   if (!selected) return;
-
   if (selected.correct) totalCorrect += 1;
   answered = true;
-
   optionButtons.forEach((button) => {
-    const isSelected = button.dataset.option === optionKey;
     button.disabled = true;
-    button.classList.toggle('selected', isSelected);
+    button.classList.toggle('selected', button.dataset.option === optionKey);
   });
-
   const panel = document.getElementById('game-feedback');
   const nextButton = document.getElementById('next-question-button');
-  const retryButton = document.getElementById('retry-button');
   panel.hidden = false;
   panel.classList.toggle('correct', selected.correct);
   document.getElementById('feedback-status').textContent = selected.status;
   document.getElementById('feedback-title').textContent = selected.title;
   document.getElementById('feedback-text').textContent = selected.text;
-
-  const isLastQuestion = currentQuestionIndex === gameQuestions.length - 1;
-  if (isLastQuestion) {
-    const finalMessage = `${totalCorrect} de ${gameQuestions.length} respuestas correctas.`;
+  if (currentQuestionIndex === gameQuestions.length - 1) {
     document.getElementById('feedback-status').textContent = 'RESULTADO FINAL';
-    document.getElementById('feedback-title').textContent = `Tu resultado: ${finalMessage}`;
+    document.getElementById('feedback-title').textContent = `Tu resultado: ${totalCorrect} de ${gameQuestions.length} respuestas correctas.`;
     document.getElementById('feedback-text').textContent = totalCorrect === gameQuestions.length ? '¡Excelente! Demuestras una comprensión sólida de cómo la evidencia y la equidad territorial deben guiar la política pública.' : 'Sigue revisando las brechas territoriales y la relación entre crecimiento, ingreso y acceso a derechos. El bienestar no se mide solo por el PIB.';
     nextButton.hidden = true;
-    retryButton.textContent = 'Intentar de nuevo ↻';
   } else {
     nextButton.hidden = false;
     nextButton.innerHTML = 'Siguiente pregunta <span aria-hidden="true">→</span>';
-    retryButton.textContent = 'Intentar de nuevo ↻';
   }
+  document.getElementById('retry-button').textContent = 'Intentar de nuevo ↻';
 }
-
-function resetGame() {
-  currentQuestionIndex = 0;
-  totalCorrect = 0;
-  updateQuestionUI();
-}
-
-optionButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    if (answered) return;
-    showFeedback(button.dataset.option);
-  });
-});
-
+function resetGame() { currentQuestionIndex = 0; totalCorrect = 0; updateQuestionUI(); }
+optionButtons.forEach((button) => button.addEventListener('click', () => showFeedback(button.dataset.option)));
 document.getElementById('next-question-button').addEventListener('click', () => {
-  if (answered) {
-    currentQuestionIndex += 1;
-    if (currentQuestionIndex >= gameQuestions.length) {
-      resetGame();
-      return;
-    }
-    updateQuestionUI();
-  }
+  if (!answered) return;
+  currentQuestionIndex += 1;
+  updateQuestionUI();
+  optionButtons[0].focus();
 });
-
-document.getElementById('retry-button').addEventListener('click', () => {
-  resetGame();
-});
+document.getElementById('retry-button').addEventListener('click', () => { resetGame(); optionButtons[0].focus(); });
 
 renderChart('pib');
 renderView('home', {focusHeading:false});

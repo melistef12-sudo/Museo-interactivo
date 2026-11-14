@@ -1,5 +1,64 @@
-const sequence = ['home', '1', '2', '3', '4', '5', 'closing'];
-const stationNames = {home:'PORTADA', '1':'ESTACIÓN 01', '2':'ESTACIÓN 02', '3':'ESTACIÓN 03', '4':'ESTACIÓN 04', '5':'ESTACIÓN 05', closing:'CIERRE'};
+// Merge the separate evidence scene into station 02 so the definition and its example graph appear together.
+const evidenceScene = document.getElementById('view-3');
+const measurementScene = document.getElementById('view-2');
+if (evidenceScene && measurementScene) {
+  const evidenceHeading = document.createElement('div');
+  evidenceHeading.className = 'evidence-heading';
+  evidenceHeading.innerHTML = '<p class="eyebrow"><span class="station-kicker">EVIDENCIA</span> · DATOS OFICIALES DEL DANE</p><h3>Del indicador a la realidad</h3><p class="lede">Explora las cifras seleccionadas. Cada gráfica usa su propia escala y periodo: no se completan años sin datos ni se mezclan territorios con el total nacional.</p>';
+  const comparator = measurementScene.querySelector('.comparator');
+  const interactionHint = measurementScene.querySelector('.interaction-hint');
+  const chartShell = evidenceScene.querySelector('.chart-shell');
+  const dataNote = evidenceScene.querySelector('.data-note');
+  const chartEyebrow = chartShell?.querySelector('.chart-header .eyebrow');
+  if (chartEyebrow) chartEyebrow.textContent = 'EJEMPLO · CRECIMIENTO DEL PIB NACIONAL';
+  if (chartShell && comparator) {
+    const evidenceBlock = document.createElement('section');
+    evidenceBlock.className = 'evidence-block';
+    evidenceBlock.setAttribute('aria-label', 'Gráficas de evidencia del DANE');
+    evidenceBlock.append(evidenceHeading, chartShell);
+    if (dataNote) evidenceBlock.append(dataNote);
+    (interactionHint || comparator).insertAdjacentElement('afterend', evidenceBlock);
+  }
+  evidenceScene.remove();
+  const stationThree = document.getElementById('view-4');
+  const stationFour = document.getElementById('view-5');
+  if (stationThree) {
+    stationThree.id = 'view-3';
+    stationThree.dataset.index = '3';
+    const marker = stationThree.querySelector('.station-kicker');
+    if (marker) marker.textContent = '03';
+    const title = stationThree.querySelector('h2');
+    if (title) title.id = 'station-3-title';
+    stationThree.setAttribute('aria-labelledby', 'station-3-title');
+  }
+  if (stationFour) {
+    stationFour.id = 'view-4';
+    stationFour.dataset.index = '4';
+    const marker = stationFour.querySelector('.station-kicker');
+    if (marker) marker.textContent = '04';
+    const title = stationFour.querySelector('h2');
+    if (title) title.id = 'station-4-title';
+    stationFour.setAttribute('aria-labelledby', 'station-4-title');
+  }
+  const removedNavItem = document.querySelector('.station-link[data-station="3"]');
+  removedNavItem?.remove();
+  document.querySelectorAll('.station-link').forEach((button, index) => {
+    const number = index + 1;
+    button.dataset.station = String(number);
+    button.textContent = String(number).padStart(2, '0');
+    button.setAttribute('aria-label', `Estación ${String(number).padStart(2, '0')}`);
+  });
+  const heading = measurementScene.querySelector('.station-heading .eyebrow');
+  if (heading) heading.innerHTML = '<span class="station-kicker">02</span> · MEDICIÓN Y EVIDENCIA';
+  const summary = measurementScene.querySelector('.station-heading .lede');
+  if (summary) summary.textContent = 'Un solo indicador no cuenta toda la historia. Compara qué mide cada cifra y observa la evidencia del DANE para entender cómo el crecimiento económico convive con brechas de ingreso y bienestar entre territorios.';
+  const style = document.createElement('style');
+  style.textContent = `.evidence-block{margin-top:2.4rem;padding-top:1.6rem;border-top:1px solid rgba(255,255,255,.14)}.evidence-heading{max-width:780px;margin-bottom:1rem}.evidence-heading h3{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.2rem);margin:.35rem 0 .55rem}.evidence-heading .lede{font-size:.9rem}.evidence-block .chart-shell{margin-top:1rem;border-color:rgba(255,255,255,.16);background:linear-gradient(145deg,#171a22,#111319)}.evidence-block .chart-header{align-items:flex-start}.evidence-block .chart-header .eyebrow{color:var(--amber)}.evidence-block .chart-header h3{font-size:clamp(1.35rem,2.5vw,1.8rem)}.evidence-block .chart-plot{display:block;min-height:0;padding:1.2rem .25rem .7rem;background:none;border:0;overflow:hidden}.evidence-block .chart-plot svg{width:100%;height:auto;max-height:360px}.evidence-block .chart-legend{padding:.75rem .8rem;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08)}.evidence-block .data-note{padding:.8rem 1rem;margin:.75rem 0 0;background:rgba(255,183,3,.055);border-left:2px solid var(--amber);line-height:1.65}.chart-tab[aria-selected="true"]{font-weight:700}.station-view[data-index="2"]{padding-bottom:4rem}@media(max-width:600px){.evidence-block{margin-top:1.7rem;padding-top:1.2rem}.evidence-block .chart-shell{padding:.9rem .65rem}.evidence-block .chart-plot{padding:.7rem 0}.evidence-heading .lede{font-size:.82rem}}`;
+  document.head.append(style);
+}
+
+const sequence = ['home', '1', '2', '3', '4', 'closing'];
+const stationNames = {home:'PORTADA', '1':'ESTACIÓN 01', '2':'ESTACIÓN 02', '3':'ESTACIÓN 03', '4':'ESTACIÓN 04', closing:'CIERRE'};
 let currentView = 'home';
 
 function updateActiveMenu(stationIndex) {
@@ -10,7 +69,6 @@ function updateActiveMenu(stationIndex) {
     else button.removeAttribute('aria-current');
   });
 }
-
 function renderView(nextView, {focusHeading = true} = {}) {
   if (!sequence.includes(String(nextView))) return;
   currentView = String(nextView);
@@ -29,18 +87,13 @@ function renderView(nextView, {focusHeading = true} = {}) {
   window.scrollTo({top: 0, behavior: 'smooth'});
   if (focusHeading) {
     const heading = document.querySelector('.view:not([hidden]) h1, .view:not([hidden]) h2');
-    if (heading) {
-      heading.setAttribute('tabindex', '-1');
-      heading.focus({preventScroll: true});
-    }
+    if (heading) { heading.setAttribute('tabindex', '-1'); heading.focus({preventScroll: true}); }
   }
 }
-
 function navigate(delta) {
   const index = sequence.indexOf(currentView);
   renderView(sequence[(index + delta + sequence.length) % sequence.length]);
 }
-
 document.querySelectorAll('.station-link').forEach((button) => button.addEventListener('click', () => renderView(button.dataset.station)));
 document.querySelectorAll('[data-go]').forEach((button) => button.addEventListener('click', () => renderView(button.dataset.go)));
 document.getElementById('back-button').addEventListener('click', () => navigate(-1));
@@ -82,23 +135,11 @@ document.querySelectorAll('.tab-button').forEach((button, index, buttons) => {
   });
 });
 
-// Only the values supplied for the exhibit are plotted. Missing years are not interpolated.
+// Plot only the reference values supplied for the exhibit; no missing years are interpolated.
 const chartData = {
-  pib: {
-    title:'Crecimiento del PIB', unit:'VARIACIÓN ANUAL (%)', caption:'Tasas anuales en volumen · trimestres II seleccionados', max:4, tick:1,
-    insight:'El crecimiento anual citado pasa de 0,4 % en 2023-II a 3,5 % en 2026pr-II. El dato de 2026pr es provisional; los puntos intermedios no se estiman.',
-    rows:[{label:'2023-II',value:.4,color:'national'},{label:'2024-II',value:1.5,color:'national'},{label:'2025-II',value:1.9,color:'national'},{label:'2026pr-II',value:3.5,color:'national'}]
-  },
-  monetaria: {
-    title:'Incidencia de Pobreza Monetaria', unit:'PERSONAS EN POBREZA (%)', caption:'Puntos de referencia seleccionados · 2020 y 2025', max:50, tick:10,
-    insight:'En 2025, la pobreza monetaria fue 39,5 % en centros poblados y rural disperso, frente a 24,6 % en cabeceras y 28,0 % nacional. El 43,1 % corresponde al total nacional de 2020: se muestra como referencia de otro año, no como dato rural.',
-    rows:[{label:'2020 · Nacional',value:43.1,color:'national'},{label:'2025 · Nacional',value:28,color:'national'},{label:'2025 · Cabeceras',value:24.6,color:'urban'},{label:'2025 · Centros poblados y rural disperso',shortLabel:['Centros poblados y','rural disperso'],value:39.5,color:'rural'}]
-  },
-  multidimensional: {
-    title:'Incidencia de Pobreza Multidimensional (PM)', unit:'PERSONAS EN POBREZA (%)', caption:'Puntos de referencia seleccionados · 2018 y 2025', max:25, tick:5,
-    insight:'En 2025, la incidencia rural (22,4 %) fue más de tres veces la de cabeceras (6,3 %); el total nacional fue 9,9 %. El 19,1 % es el dato nacional de 2018 y sirve como referencia temporal, no como cifra rural.',
-    rows:[{label:'2018 · Nacional',value:19.1,color:'national'},{label:'2025 · Nacional',value:9.9,color:'national'},{label:'2025 · Cabeceras',value:6.3,color:'urban'},{label:'2025 · Centros poblados y rural disperso',shortLabel:['Centros poblados y','rural disperso'],value:22.4,color:'rural'}]
-  }
+  pib: {title:'Crecimiento del PIB nacional', unit:'VARIACIÓN ANUAL (%)', caption:'Tasas anuales en volumen · trimestres II seleccionados', max:4, tick:1, insight:'Los puntos seleccionados muestran un crecimiento de 0,4 % en 2023-II, 1,5 % en 2024-II, 1,9 % en 2025-II y 3,5 % en 2026pr-II. El dato de 2026pr es provisional; no se estiman los periodos intermedios.', rows:[{label:'2023-II',value:.4,color:'national'},{label:'2024-II',value:1.5,color:'national'},{label:'2025-II',value:1.9,color:'national'},{label:'2026pr-II',value:3.5,color:'national'}]},
+  monetaria: {title:'Pobreza monetaria', unit:'PERSONAS EN POBREZA (%)', caption:'Referencias disponibles · 2020 y 2025', max:50, tick:10, insight:'En 2025, la incidencia fue 28,0 % a nivel nacional, 24,6 % en cabeceras y 39,5 % en centros poblados y rural disperso. El 43,1 % es el dato nacional de 2020; se muestra separado porque corresponde a otro año.', rows:[{label:'2020 · Nacional',value:43.1,color:'national'},{label:'2025 · Nacional',value:28,color:'national'},{label:'2025 · Cabeceras',value:24.6,color:'urban'},{label:'2025 · Centros poblados y rural disperso',shortLabel:['2025 · Centros poblados y','rural disperso'],value:39.5,color:'rural'}]},
+  multidimensional: {title:'Pobreza multidimensional', unit:'PERSONAS EN POBREZA (%)', caption:'Referencias disponibles · 2018 y 2025', max:25, tick:5, insight:'En 2025, la incidencia fue 9,9 % a nivel nacional, 6,3 % en cabeceras y 22,4 % en centros poblados y rural disperso (más de tres veces la cifra de cabeceras). El 19,1 % es el dato nacional de 2018, mostrado como referencia de otro año.', rows:[{label:'2018 · Nacional',value:19.1,color:'national'},{label:'2025 · Nacional',value:9.9,color:'national'},{label:'2025 · Cabeceras',value:6.3,color:'urban'},{label:'2025 · Centros poblados y rural disperso',shortLabel:['2025 · Centros poblados y','rural disperso'],value:22.4,color:'rural'}]}
 };
 const svgNS = 'http://www.w3.org/2000/svg';
 const chartColors = {national:'#00a896',urban:'#e63946',rural:'#8d99ae'};
@@ -121,39 +162,36 @@ function renderChart(key) {
   document.getElementById('chart-caption').textContent = chart.caption;
   const plot = document.getElementById('chart-plot');
   plot.setAttribute('aria-label', `${chart.title}. ${chart.rows.map(row => `${row.label}: ${String(row.value).replace('.', ',')} por ciento`).join('; ')}`);
-  const note = document.querySelector('.data-note');
-  note.textContent = `${chart.insight} Fuente: DANE, Cuentas Nacionales y Encuesta de Calidad de Vida (ECV). Se presentan únicamente los puntos de referencia indicados; no es una serie anual completa.`;
+  document.querySelector('.data-note').textContent = `${chart.insight} Fuente: DANE, Cuentas Nacionales y Encuesta de Calidad de Vida (ECV). Los años sin dato no se interpolan.`;
 
-  const left = 300, right = 720, top = 38, rowHeight = 54;
+  const width = 900, left = 300, right = 790, top = 43, rowHeight = 58;
   const height = top + chart.rows.length * rowHeight + 20;
-  const svg = makeSvgElement('svg', {viewBox:`0 0 760 ${height}`, role:'img', 'aria-labelledby':'chart-svg-title chart-svg-desc', preserveAspectRatio:'xMidYMid meet', style:'display:block;width:100%;height:auto;overflow:visible'});
+  const svg = makeSvgElement('svg', {viewBox:`0 0 ${width} ${height}`, role:'img', 'aria-labelledby':'chart-svg-title chart-svg-desc', preserveAspectRatio:'xMidYMid meet'});
   const title = makeSvgElement('title', {id:'chart-svg-title'}); title.textContent = chart.title;
   const desc = makeSvgElement('desc', {id:'chart-svg-desc'}); desc.textContent = chart.rows.map(row => `${row.label}: ${formatPercent(row.value)}`).join('. ');
   svg.append(title, desc);
-
   const tickCount = chart.max / chart.tick;
   for (let i = 0; i <= tickCount; i += 1) {
     const value = i * chart.tick;
     const x = left + (value / chart.max) * (right - left);
-    svg.append(makeSvgElement('line', {x1:x,y1:top-8,x2:x,y2:height-16,stroke:'rgba(255,255,255,0.13)','stroke-width':'1'}));
-    const tickLabel = makeSvgElement('text', {x,y:top-16,fill:'#a1a5b1','font-size':'12','text-anchor':'middle','font-family':'DM Sans, Arial, sans-serif'});
+    svg.append(makeSvgElement('line', {x1:x,y1:top-5,x2:x,y2:height-16,stroke:'rgba(255,255,255,.13)','stroke-width':'1'}));
+    const tickLabel = makeSvgElement('text', {x,y:top-14,fill:'#a1a5b1','font-size':'12','text-anchor':'middle','font-family':'DM Sans, Arial, sans-serif'});
     tickLabel.textContent = `${String(value).replace('.', ',')} %`;
     svg.append(tickLabel);
   }
   chart.rows.forEach((row, index) => {
-    const y = top + index * rowHeight + 19;
+    const y = top + index * rowHeight + 18;
     const label = makeSvgElement('text', {x:8,y:y+4,fill:'#f2f0e9','font-size':'13','font-family':'DM Sans, Arial, sans-serif'});
-    if (row.shortLabel) {
-      row.shortLabel.forEach((line, lineIndex) => {
-        const tspan = makeSvgElement('tspan', {x:8,dy:lineIndex === 0 ? 0 : 15});
-        tspan.textContent = line;
-        label.append(tspan);
-      });
-    } else label.textContent = row.label;
+    if (row.shortLabel) row.shortLabel.forEach((line, lineIndex) => {
+      const tspan = makeSvgElement('tspan', {x:8,dy:lineIndex === 0 ? 0 : 15});
+      tspan.textContent = line;
+      label.append(tspan);
+    });
+    else label.textContent = row.label;
     svg.append(label);
     const barWidth = Math.max(2, (row.value / chart.max) * (right - left));
-    svg.append(makeSvgElement('rect', {x:left,y:y-10,width:barWidth,height:20,rx:3,fill:chartColors[row.color]}));
-    const valueLabel = makeSvgElement('text', {x:Math.min(left + barWidth + 8, 750),y:y+5,fill:'#f2f0e9','font-size':'13','font-weight':'700','font-family':'DM Sans, Arial, sans-serif'});
+    svg.append(makeSvgElement('rect', {x:left,y:y-10,width:barWidth,height:20,rx:4,fill:chartColors[row.color]}));
+    const valueLabel = makeSvgElement('text', {x:Math.min(left + barWidth + 9, 815),y:y+5,fill:'#f2f0e9','font-size':'13','font-weight':'700','font-family':'DM Sans, Arial, sans-serif'});
     valueLabel.textContent = formatPercent(row.value);
     svg.append(valueLabel);
   });

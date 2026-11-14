@@ -160,34 +160,129 @@ function renderChart(key) {
 }
 document.querySelectorAll('.chart-tab').forEach((button) => button.addEventListener('click', () => renderChart(button.dataset.chart)));
 
-const feedbackData = {
-  a: {correct:false,status:'RESPUESTA INCOMPLETA',title:'¡Atención! Crecimiento sin equidad territorial.',text:'Aunque esta medida puede elevar el indicador del PIB nacional, los datos muestran que el crecimiento urbano no se filtra automáticamente al campo. La brecha multidimensional del 22,4 % en zonas rurales seguiría intacta al no intervenir salud, educación ni servicios básicos.'},
-  b: {correct:false,status:'ALIVIO TEMPORAL',title:'¡Efecto temporal!',text:'Un subsidio único alivia momentáneamente la Pobreza Monetaria al permitir comprar la canasta básica ese mes. Sin embargo, no resuelve las 5 dimensiones de la Pobreza Multidimensional: un hogar no construye un acueducto ni una escuela con un giro puntual.'},
-  c: {correct:true,status:'DECISIÓN BASADA EN EVIDENCIA',title:'¡Decisión integral!',text:'Atacas simultáneamente las raíces del problema: mejoras vivienda y servicios, educación y trabajo en el campo (reduciendo el 22,4 % de Pobreza Multidimensional) y generas capacidades productivas que elevan los ingresos permanentes (reduciendo el 39,5 % de Pobreza Monetaria), mientras aportas al PIB real.'}
-};
+const gameQuestions = [
+  {
+    question: '¿Cuál política prioriza un bienestar más sostenible para el campo?',
+    help: 'Elige la respuesta que combine crecimiento y acceso a derechos en las zonas rurales.',
+    options: [
+      { key: 'a', label: 'Exenciones tributarias para grandes industrias y capitales.', correct: false, status: 'CRECIMIENTO SIN EQUIDAD', title: '¡Atención! Crecimiento sin equidad territorial.', text: 'Aunque esta medida puede elevar el PIB nacional, los datos muestran que el crecimiento urbano no se filtra automáticamente al campo. La brecha multidimensional del 22,4 % en zonas rurales seguiría intacta al no intervenir salud, educación ni servicios básicos.' },
+      { key: 'b', label: 'Un bono monetario único para familias rurales durante un mes.', correct: false, status: 'ALIVIO TEMPORAL', title: '¡Efecto temporal!', text: 'Un subsidio único alivia momentáneamente la Pobreza Monetaria al permitir comprar la canasta básica ese mes. Sin embargo, no resuelve las 5 dimensiones de la Pobreza Multidimensional: un hogar no construye un acueducto ni una escuela con un giro puntual.' },
+      { key: 'c', label: 'Invertir en acueductos veredales, escuelas técnicas rurales, vías terciarias y formalización laboral agropecuaria.', correct: true, status: 'DECISIÓN BASADA EN EVIDENCIA', title: '¡Decisión integral!', text: 'Atacas simultáneamente las raíces del problema: mejoras vivienda y servicios, educación y trabajo en el campo, reduciendo el 22,4 % de Pobreza Multidimensional y generando capacidades productivas que elevan ingresos permanentes, además de aportar al PIB real.' }
+    ]
+  },
+  {
+    question: '¿Qué señal es más importante para leer la realidad de Colombia?',
+    help: 'Antes de celebrar el crecimiento, revisa quién tiene acceso a oportunidades reales.',
+    options: [
+      { key: 'a', label: 'La cifra del PIB nacional en aumento.', correct: false, status: 'PIB NO LO EXPLICA TODO', title: 'El PIB cuenta la producción, no siempre la distribución.', text: 'El PIB refleja el tamaño de la economía, pero no muestra si las personas tienen ingreso estable, servicios básicos ni acceso a educación y salud.' },
+      { key: 'b', label: 'La combinación de PIB, pobreza monetaria y pobreza multidimensional.', correct: true, status: 'MIRADA COMPLETA', title: '¡Correcto! El análisis debe ser multidimensional.', text: 'Cada indicador responde a una pregunta distinta: producción, ingreso y acceso a derechos. Juntos permiten entender mejor la desigualdad territorial y el bienestar real.' },
+      { key: 'c', label: 'Solo la tasa de crecimiento anual.', correct: false, status: 'CRECIMIENTO PARCIAL', title: 'Crecimiento sin mirada territorial.', text: 'La tasa de crecimiento puede mejorar la narrativa macroeconómica, pero no revela si los beneficios llegaron a hogares rurales ni a comunidades con mayor vulnerabilidad.' }
+    ]
+  },
+  {
+    question: 'Si tu objetivo es cerrar brechas de bienestar, ¿qué prioridad es más efectiva?',
+    help: 'La mejor decisión suele combinar equidad, infraestructura y capacidades productivas.',
+    options: [
+      { key: 'a', label: 'Aumentar más impuestos a las familias de bajos ingresos.', correct: false, status: 'MEDIDA INADECUADA', title: 'No es la vía adecuada.', text: 'Aumentar la carga fiscal sobre quienes menos tienen refuerza la desigualdad y no resuelve la falta de infraestructura ni de oportunidades en el campo.' },
+      { key: 'b', label: 'Invertir en servicios básicos y capacidades productivas en zonas rurales.', correct: true, status: 'ESTRATEGIA INTEGRAL', title: '¡Decisión acertada!', text: 'La inversión en acueductos, educación técnica, vías terciarias y formalización laboral genera bienestar real y también condiciones para una actividad económica más duradera.' },
+      { key: 'c', label: 'Repartir un subsidio único para todos por igual.', correct: false, status: 'SUBSIDIO LIMITADO', title: 'Efecto parcial y fragmentado.', text: 'Un subsidio universal sin inversión territorial no resuelve la infraestructura ni la calidad de servicios esenciales que sostienen la vida y la productividad.' }
+    ]
+  }
+];
+
 const optionButtons = [...document.querySelectorAll('.option-button')];
-function chooseOption(key) {
-  const result = feedbackData[key];
-  if (!result) return;
-  optionButtons.forEach((button) => {
-    button.disabled = true;
-    button.classList.toggle('selected', button.dataset.option === key);
+let currentQuestionIndex = 0;
+let totalCorrect = 0;
+let answered = false;
+
+function updateQuestionUI() {
+  const currentQuestion = gameQuestions[currentQuestionIndex];
+  document.getElementById('game-step').textContent = `PREGUNTA ${currentQuestionIndex + 1} / ${gameQuestions.length}`;
+  document.getElementById('game-question-title').textContent = currentQuestion.question;
+  document.getElementById('game-question-copy').textContent = currentQuestion.help;
+
+  optionButtons.forEach((button, index) => {
+    const option = currentQuestion.options[index];
+    button.dataset.option = option.key;
+    button.innerHTML = `<span class="option-letter">${option.key.toUpperCase()}</span><span>${option.label}</span><span class="option-arrow" aria-hidden="true">↗</span>`;
+    button.disabled = false;
+    button.classList.remove('selected');
+    button.setAttribute('aria-label', option.label);
   });
+
   const panel = document.getElementById('game-feedback');
-  panel.hidden = false;
-  panel.classList.toggle('correct', result.correct);
-  document.getElementById('feedback-status').textContent = result.status;
-  document.getElementById('feedback-title').textContent = result.title;
-  document.getElementById('feedback-text').textContent = result.text;
-  document.getElementById('retry-button').focus({preventScroll:true});
+  panel.hidden = true;
+  panel.classList.remove('correct');
+  document.getElementById('next-question-button').hidden = true;
+  answered = false;
 }
-optionButtons.forEach((button) => button.addEventListener('click', () => chooseOption(button.dataset.option)));
+
+function showFeedback(optionKey) {
+  const currentQuestion = gameQuestions[currentQuestionIndex];
+  const selected = currentQuestion.options.find((opt) => opt.key === optionKey);
+  if (!selected) return;
+
+  if (selected.correct) totalCorrect += 1;
+  answered = true;
+
+  optionButtons.forEach((button) => {
+    const isSelected = button.dataset.option === optionKey;
+    button.disabled = true;
+    button.classList.toggle('selected', isSelected);
+  });
+
+  const panel = document.getElementById('game-feedback');
+  const nextButton = document.getElementById('next-question-button');
+  const retryButton = document.getElementById('retry-button');
+  panel.hidden = false;
+  panel.classList.toggle('correct', selected.correct);
+  document.getElementById('feedback-status').textContent = selected.status;
+  document.getElementById('feedback-title').textContent = selected.title;
+  document.getElementById('feedback-text').textContent = selected.text;
+
+  const isLastQuestion = currentQuestionIndex === gameQuestions.length - 1;
+  if (isLastQuestion) {
+    const finalMessage = `${totalCorrect} de ${gameQuestions.length} respuestas correctas.`;
+    document.getElementById('feedback-status').textContent = 'RESULTADO FINAL';
+    document.getElementById('feedback-title').textContent = `Tu resultado: ${finalMessage}`;
+    document.getElementById('feedback-text').textContent = totalCorrect === gameQuestions.length ? '¡Excelente! Demuestras una comprensión sólida de cómo la evidencia y la equidad territorial deben guiar la política pública.' : 'Sigue revisando las brechas territoriales y la relación entre crecimiento, ingreso y acceso a derechos. El bienestar no se mide solo por el PIB.';
+    nextButton.hidden = true;
+    retryButton.textContent = 'Intentar de nuevo ↻';
+  } else {
+    nextButton.hidden = false;
+    nextButton.innerHTML = 'Siguiente pregunta <span aria-hidden="true">→</span>';
+    retryButton.textContent = 'Intentar de nuevo ↻';
+  }
+}
+
+function resetGame() {
+  currentQuestionIndex = 0;
+  totalCorrect = 0;
+  updateQuestionUI();
+}
+
+optionButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    if (answered) return;
+    showFeedback(button.dataset.option);
+  });
+});
+
+document.getElementById('next-question-button').addEventListener('click', () => {
+  if (answered) {
+    currentQuestionIndex += 1;
+    if (currentQuestionIndex >= gameQuestions.length) {
+      resetGame();
+      return;
+    }
+    updateQuestionUI();
+  }
+});
+
 document.getElementById('retry-button').addEventListener('click', () => {
-  document.getElementById('game-feedback').hidden = true;
-  document.getElementById('game-feedback').classList.remove('correct');
-  optionButtons.forEach((button) => { button.disabled = false; button.classList.remove('selected'); });
-  optionButtons[0].focus();
+  resetGame();
 });
 
 renderChart('pib');
 renderView('home', {focusHeading:false});
+resetGame();

@@ -91,13 +91,26 @@
 
     <section class="view station-view" id="view-5" data-view="station" data-index="5" aria-labelledby="station-5-title" hidden>
       <div class="station-heading"><p class="eyebrow"><span class="station-kicker">05</span> · LABORATORIO DE DECISIONES</p><h2 id="station-5-title">Laboratorio Ministerial:<br><em>el reto del presupuesto 2026</em></h2><p class="lede">Eres el director de planeación nacional. El PIB creció un <strong>3,5 %</strong>, pero en las zonas rurales la pobreza multidimensional sigue en <strong>22,4 %</strong> (frente a <strong>6,3 %</strong> en ciudades) y la monetaria en <strong>39,5 %</strong>. Tienes un excedente presupuestal para cerrar la brecha de bienestar de forma sostenible. <strong>¿Qué decisión tomas?</strong></p></div>
-      <div class="game-card"><div class="game-question"><span class="eyebrow">DECISIÓN 01 / 01</span><h3>¿Dónde invertirías el excedente?</h3><p>Elige una política y observa qué revela la evidencia.</p></div>
+      <div class="game-card">
+        <div class="game-question">
+          <span class="eyebrow" id="game-step">PREGUNTA 01 / 03</span>
+          <h3 id="game-question-title">¿Dónde invertirías el excedente?</h3>
+          <p id="game-question-copy">Elige una política y observa qué revela la evidencia.</p>
+        </div>
         <div class="option-list" role="group" aria-label="Opciones de política pública">
           <button class="option-button" type="button" data-option="a"><span class="option-letter">A</span><span>Otorgar exenciones tributarias generales a grandes industrias en las capitales para acelerar aún más el PIB nacional.</span><span class="option-arrow" aria-hidden="true">↗</span></button>
           <button class="option-button" type="button" data-option="b"><span class="option-letter">B</span><span>Entregar un bono monetario único de emergencia por un mes a las familias rurales sin modificar la infraestructura local.</span><span class="option-arrow" aria-hidden="true">↗</span></button>
           <button class="option-button" type="button" data-option="c"><span class="option-letter">C</span><span>Invertir en acueductos veredales, escuelas técnicas rurales, vías terciarias y formalización laboral agropecuaria.</span><span class="option-arrow" aria-hidden="true">↗</span></button>
         </div>
-        <div class="feedback" id="game-feedback" aria-live="polite" aria-atomic="true" hidden><span class="feedback-status" id="feedback-status"></span><h4 id="feedback-title"></h4><p id="feedback-text"></p><button class="button button-secondary" id="retry-button" type="button">Intentar de nuevo <span aria-hidden="true">↻</span></button></div>
+        <div class="feedback" id="game-feedback" aria-live="polite" aria-atomic="true" hidden>
+          <span class="feedback-status" id="feedback-status"></span>
+          <h4 id="feedback-title"></h4>
+          <p id="feedback-text"></p>
+          <div class="feedback-actions">
+            <button class="button button-secondary" id="next-question-button" type="button" hidden>Siguiente pregunta <span aria-hidden="true">→</span></button>
+            <button class="button button-secondary" id="retry-button" type="button">Intentar de nuevo <span aria-hidden="true">↻</span></button>
+          </div>
+        </div>
       </div>
     </section>
 
